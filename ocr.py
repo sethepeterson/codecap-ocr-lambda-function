@@ -1,12 +1,8 @@
 from pytesseract import pytesseract
 from PIL import Image
+from io import BytesIO
 import base64
 import os
-
-# try:
-#     from PIL import Image
-# except ImportError:
-#     import Image
 
 
 class OCR:
@@ -24,19 +20,15 @@ class OCR:
 
         # Decode Base64 string to image.
         try:
-            with open(OCR.decoded_image_file_name, 'wb') as decoded_image_file:
-                decoded_image_file.write(base64.decodebytes(base_64_image))
+            image = Image.open(BytesIO(base64.b64decode(base_64_image)))
         except:
             return OCR.invalid_base_64_input
 
         # Parse image.
         try:
             pytesseract.tesseract_cmd = OCR.tesseract_exe_path
-            decoded_image = Image.open(OCR.decoded_image_file_name)
-            text = pytesseract.image_to_string(decoded_image)
-            os.remove(OCR.decoded_image_file_name)
+            text = pytesseract.image_to_string(image)
         except:
-            os.remove(OCR.decoded_image_file_name)
             return OCR.ocr_error
 
         # Case: OCR recognized no text.
