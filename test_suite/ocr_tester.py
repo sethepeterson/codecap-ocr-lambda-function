@@ -1,3 +1,6 @@
+import sys
+sys.path.append(".")
+
 from ocr import OCR
 import base64
 import os

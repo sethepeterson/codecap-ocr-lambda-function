@@ -16,11 +16,7 @@ from os.path import normcase, normpath, realpath
 from pkgutil import find_loader
 from tempfile import NamedTemporaryFile
 from threading import Timer
-
-try:
-    from PIL import Image
-except ImportError:
-    import Image
+from dependencies.PIL import Image
 
 
 tesseract_cmd = 'tesseract'

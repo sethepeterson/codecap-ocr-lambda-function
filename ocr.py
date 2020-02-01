@@ -1,5 +1,5 @@
-from pytesseract import pytesseract
-from PIL import Image
+from dependencies.pytesseract import pytesseract
+from dependencies.PIL import Image
 from io import BytesIO
 import base64
 import os
@@ -8,7 +8,7 @@ import os
 class OCR:
 
     # Paths
-    tesseract_exe_path = os.path.dirname(__file__) + '\\Tesseract-OCR\\tesseract'
+    tesseract_exe_path = os.path.dirname(__file__) + '\\dependencies\\Tesseract-OCR\\tesseract'
 
     # Status codes
     success_status_code = 200
