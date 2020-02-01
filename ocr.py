@@ -8,7 +8,7 @@ import os
 class OCR:
 
     # Paths
-    tesseract_exe_path = os.path.dirname(__file__) + '\\dependencies\\Tesseract-OCR\\tesseract'
+    tesseract_exe_path = os.getcwd() + os.path.join(os.path.sep, 'dependencies', 'Tesseract-OCR', 'tesseract')
 
     # Status codes
     success_status_code = 200

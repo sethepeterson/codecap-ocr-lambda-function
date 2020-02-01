@@ -41,7 +41,8 @@ class OCRTester:
                 print(self.test_passed.format(file_name))
 
             # Case: test failed.
-            else:                print(self.test_failed.format(file_name, expected_text, recognized_text))
+            else:                
+                print(self.test_failed.format(file_name, expected_text, recognized_text))
         print('\n\n\n')
 
 
