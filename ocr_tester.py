@@ -18,7 +18,7 @@ class OCRTester:
 
 
     def start(self):
-        print('\n\n\n')
+        print('\n')
 
         for test_case in self.test_cases:
             # Get file name and expected output.
@@ -28,19 +28,17 @@ class OCRTester:
             # Convert file to encoded Base64 string.
             file_path = self.test_files_path.format(file_name)
             with open(file_path, 'rb') as image_file:
-                base64Image = base64.b64encode(image_file.read())
+                base_64_string = base64.b64encode(image_file.read())
 
             # Get OCR output.
-            output = OCR.parse_image(base64Image)
+            (recognized_text, _) = OCR.parse_image(base_64_string)
 
             # Case: test passed.
-            if output == expected_text:
+            if recognized_text == expected_text:
                 print(self.test_passed.format(file_name))
 
             # Case: test failed.
-            else:
-                print(self.test_failed.format(file_name, expected_text, output))
-
+            else:                print(self.test_failed.format(file_name, expected_text, recognized_text))
         print('\n\n\n')
 
 
