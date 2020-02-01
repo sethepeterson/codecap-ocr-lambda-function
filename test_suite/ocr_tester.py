@@ -9,7 +9,7 @@ class OCRTester:
 
     def __init__(self):
         # Constants
-        self.test_files_path = os.path.dirname(__file__) + '\\test_files\\{}'
+        self.test_files_path = os.getcwd() + os.path.join(os.path.sep, 'test_suite', 'test_files', '{}')
         self.test_passed = '\n{} -> PASSED'
         self.test_failed = '\n{} -> FAILED\nExpected:\n{}\nActual:\n{}'
 
