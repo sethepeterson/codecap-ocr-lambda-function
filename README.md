@@ -22,3 +22,17 @@ The function will return a JSON payload with the following variables:
 | Success  | 200  |
 | Invalid Base 64 | 400 |
 | OCR error | 500 |
+
+
+### Deployment
+If you havn't modified any source code, skip to step 4.<br>
+1. Use Linux OS for step 2 and step 3.
+2. Recursively change project folder contents to permission number 755. (chmod)
+3. Create ZIP file of project folder **contents** (not the project folder itself).
+4. Sign up for AWS account.
+5. Create S3 bucket.
+6. Upload ZIP file to S3 bucket.
+6. Create Lambda function.
+7. Import code from S3 bucket.
+8. Under settings, change timeout to 30 seconds.
+9. Ready to use!
