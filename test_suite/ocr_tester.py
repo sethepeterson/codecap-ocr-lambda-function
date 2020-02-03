@@ -16,7 +16,7 @@ class OCRTester:
         # Initialize test cases.
         # Test cases should be represented as a tuple: (<fileName>, <expected output text>)
         self.test_cases = []
-        self.test_cases.append( ('google.PNG', 'Google') )
+        self.test_cases.append( ('google.PNG', 'Google\n\n') )
         self.test_cases.append( ('python1.PNG', ''))
 
 
@@ -34,7 +34,7 @@ class OCRTester:
                 base_64_string = base64.b64encode(image_file.read())
 
             # Get OCR output.
-            (recognized_text, _) = OCR.parse_image(base_64_string)
+            (recognized_text, _) = OCR.parse_image(base_64_string, True)
 
             # Case: test passed.
             if recognized_text == expected_text:

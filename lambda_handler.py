@@ -7,7 +7,7 @@ from ocr import OCR
 #   base_64_string - string representing an image encoded using Base 64 format.
 #   context        - N/A
 def lambda_handler(base_64_string: str, context):
-    (recognized_text, status_code) = OCR.parse_image(base_64_string)
+    (recognized_text, status_code) = OCR.parse_image(base_64_string, False)
 
     return {
         'text': json.dumps(recognized_text),
