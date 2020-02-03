@@ -3,6 +3,8 @@ AWS Lambda function that executes Tesseract OCR (*Optimal Character Recognition 
 <br><br>
 
 ### Dependencies
+* [Windows 10](https://www.microsoft.com/en-us/windows/get-windows-10)
+    - Required for local testing.
 * [Python 3.6.8](https://www.python.org/downloads/release/python-368/)
     - Required for local testing.
 * [Tesseract-OCR](https://github.com/tesseract-ocr/tesseract)
@@ -10,7 +12,7 @@ AWS Lambda function that executes Tesseract OCR (*Optimal Character Recognition 
 <br>
 
 ### Testing
-Local testing is supported only for Windows systems. <br>
+Local testing is supported only for Windows 10 systems. <br>
 Modify [/test_suite](https://github.com/sethepeterson/tesseract-ocr-lambda-function/tree/master/test_suite) to add test cases. <br>
 Execute [ocr_tester.py](https://github.com/sethepeterson/tesseract-ocr-lambda-function/tree/master/test_suite/ocr_tester.py) to run tests.
 <br><br>
@@ -19,7 +21,7 @@ Execute [ocr_tester.py](https://github.com/sethepeterson/tesseract-ocr-lambda-fu
 Include a Base 64 encoded image in the function invocation payload. <br>
 The function will return a JSON response with the following variables:
 * text        -  String containing the recognized text or error info.
-* statusCode  -  Integer representing function success status.
+* statusCode  -  Integer representing function success status. See table below:
 
 | Result  | Status Code |
 | ------------- | ------------- |
@@ -34,9 +36,9 @@ Use a Linux OS for step 1 and step 2 to avoid file permission errors within Lamb
 2. Create ZIP file of project folder **contents** (not the project folder itself).
 3. Sign up for an AWS account.
 4. Create S3 bucket.
-5. Upload ZIP file to S3 bucket ZIP file.
+5. Upload ZIP file to S3 bucket.
 6. Create Lambda function.
-7. Configure Lambda function:
+7. Configure Lambda function with the following settings:
    
 | Setting  | Value |
 | ------------- | ------------- |
