@@ -11,7 +11,7 @@ Modify ocr_tester.py to add test cases. <br>
 Execute ocr_tester.py to run tests.
 
 ### Usage
-Include a Base 64 encoded image to the function invocation payload. <br>
+Include a Base 64 encoded image in the function invocation payload. <br>
 The function will return a JSON payload with the following variables:
 * text        -  Will contain the recognized text or error info if applicable.
 * statusCode  -  See below.
