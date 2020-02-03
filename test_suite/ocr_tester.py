@@ -34,7 +34,7 @@ class OCRTester:
                 base_64_string = base64.b64encode(image_file.read())
 
             # Get OCR output.
-            (recognized_text, _) = OCR.parse_image(base_64_string, True)
+            (recognized_text, _) = OCR.parse_image(base_64_string=base_64_string, debug_mode=True)
 
             # Case: test passed.
             if recognized_text == expected_text:
