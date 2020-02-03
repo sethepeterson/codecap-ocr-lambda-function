@@ -1,4 +1,4 @@
-# codecap-ocr-lambda-function
+# tesseract-ocr-lambda-function
 AWS Lambda function that executes Tesseract OCR on Base 64 encoded images.
 
 ### Dependencies
