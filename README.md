@@ -34,7 +34,7 @@ Use a Linux OS for step 1 and step 2 to avoid file permission errors within Lamb
 2. Create ZIP file of project folder **contents** (not the project folder itself).
 3. Sign up for an AWS account.
 4. Create S3 bucket.
-5. Upload ZIP file to S3 bucket.
+5. Upload ZIP file to S3 bucket ZIP file.
 6. Create Lambda function.
 7. Configure Lambda function:
    
@@ -44,5 +44,5 @@ Use a Linux OS for step 1 and step 2 to avoid file permission errors within Lamb
 | Handler | lambda_handler.lambda_handler |
 | Timeout | 30+ seconds |
 
-8. Import code from S3 bucket.
+8. Import source code from S3 bucket ZIP file.
 9. Ready to use!
