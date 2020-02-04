@@ -2,7 +2,7 @@ import base64
 import os
 import shutil
 import subprocess
-
+import csv
 
 class OCR:
 
@@ -78,9 +78,26 @@ class OCR:
         #                                       I think this contains the data we can utilize to implement horizontal whitespacing.
 
         # Read output files.
+
+
+        # Read the tsv file to detect indentations on new lines
+        lineNum = 0
+        parNum = 0
+        indents = []
+        with open(OCR.tsv_output_file_path) as tsvfile:
+            reader = csv.reader(tsvfile, delimiter='\t')
+            for row in reader:
+                if(row[11].strip() and (row[0] != 'level') and ((int(row[4]) != lineNum) or (int(row[2]) != parNum))):
+                    lineNum = int(row[4])
+                    parNum = int(row[2])
+                    indents.append(' ' * round(int(row[6])/16))
+
+        # Write indentations to the txt output
         try:
             with open(OCR.txt_output_file_path, 'r') as txt_output_file:
-                text = txt_output_file.read()
+                text = ''
+                for indent in indents:
+                    text += indent + txt_output_file.readline()
             shutil.rmtree(OCR.temp_files_directory_path)
         except Exception as e:
             shutil.rmtree(OCR.temp_files_directory_path)
