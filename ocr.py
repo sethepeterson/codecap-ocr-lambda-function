@@ -1,31 +1,37 @@
 import base64
+import csv
 import os
 import shutil
+import stat
 import subprocess
-import csv
+import traceback
+
 
 class OCR:
+    
+    # Output files paths
+    # Note: tmp is the only editable directory within Lambda environments.
+    temp_files_directory_path = os.path.join(os.path.sep, 'tmp', 'temp_files')
+    decoded_image_path        = os.path.join(temp_files_directory_path, 'decoded_image.png')
+    output_files_path         = os.path.join(temp_files_directory_path, 'ocr_output')
+    txt_output_file_path      = os.path.join(temp_files_directory_path, 'ocr_output.txt')
+    tsv_output_file_path      = os.path.join(temp_files_directory_path, 'ocr_output.tsv')
 
     # Tesseract paths
-    tesseract_executable_path = os.getcwd() + os.path.join(os.path.sep, 'dependencies', 'Tesseract-OCR-Linux', 'tesseract')
-    tesseract_lib_directory_path = os.getcwd() + os.path.join(os.path.sep, 'dependencies', 'Tesseract-OCR-Linux', 'lib')
-    tesseract_data_parent_directory_path = os.getcwd() + os.path.join(os.path.sep, 'dependencies', 'Tesseract-OCR-Linux')
-
-    # Temporary and output files paths
-    # Note: tmp is the only editable directory within the Lambda environment.
-    temp_files_directory_path = os.path.join(os.path.sep, 'tmp', 'temp_files')
-    decoded_image_path = os.path.join(os.path.sep, 'tmp', 'temp_files', 'decoded_image.png')
-    output_files_path = os.path.join(os.path.sep, 'tmp', 'temp_files', 'ocr_output')
-    txt_output_file_path = os.path.join(os.path.sep, 'tmp', 'temp_files', 'ocr_output.txt')
-    tsv_output_file_path = os.path.join(os.path.sep, 'tmp', 'temp_files', 'ocr_output.tsv')
+    # Note: see OCR.give_tesseract_execution_permission for details.
+    dependency_tesseract_directory_path  = os.path.join(os.getcwd(), 'dependencies', 'tesseract_ocr_linux')
+    executable_tesseract_directory_path  = os.path.join(temp_files_directory_path, 'tesseract_ocr_linux')
+    tesseract_data_prefix_directory_path = os.path.join(temp_files_directory_path, 'tesseract_ocr_linux', 'tessdata')
+    tesseract_lib_directory_path         = os.path.join(executable_tesseract_directory_path, 'lib')
+    tesseract_path                       = os.path.join(executable_tesseract_directory_path, 'tesseract')
 
     # Tesseract CLI command
     tesseract_cli_command = 'LD_LIBRARY_PATH={} TESSDATA_PREFIX={} {} {} {} txt tsv'
 
     # Status codes and error messages
-    success_status_code = 200
+    success_status_code                = 200
     invalid_base_64_string_status_code = 400
-    ocr_error_status_code = 500
+    ocr_error_status_code              = 500
 
 
     # Decodes the Base 64 encoded image and executes Tesseract OCR.
@@ -41,44 +47,38 @@ class OCR:
 
         # Decode Base 64 string to image.
         try:
-            os.makedirs(OCR.temp_files_directory_path, exist_ok=True)
+            os.makedirs(OCR.temp_files_directory_path)
             with open(OCR.decoded_image_path, 'wb') as decoded_image_file:
                 decoded_image_file.write(base64.b64decode(base_64_string))
-        except Exception as e:
-            shutil.rmtree(OCR.temp_files_directory_path)
-            return (str(e), OCR.invalid_base_64_string_status_code)
+        except:
+            return (traceback.format_exc(), OCR.invalid_base_64_string_status_code)
 
         # Execute OCR on decoded image.
         try:
-            command = OCR.tesseract_cli_command.format(
-                OCR.tesseract_lib_directory_path,
-                OCR.tesseract_data_parent_directory_path,
-                OCR.tesseract_executable_path,
-                OCR.decoded_image_path,
-                OCR.output_files_path
-            )
-            
-            # Update command if executing in a Windows testing environment.
+            # Create CLI command depending on DEBUG_MODE.
+            command = None
             if (debug_mode):
                 command = OCR.tesseract_cli_command.format(
-                    OCR.tesseract_executable_path,
+                    OCR.tesseract_path,
                     OCR.decoded_image_path,
                     OCR.output_files_path
                 )
-
+            else:
+                OCR.give_tesseract_execution_permission()
+                command = OCR.tesseract_cli_command.format(
+                    OCR.tesseract_lib_directory_path,
+                    OCR.tesseract_data_prefix_directory_path,
+                    OCR.tesseract_path,
+                    OCR.decoded_image_path,
+                    OCR.output_files_path
+                )
+            
+            # Execute CLI command.
             subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT)
-        except Exception as e:
-            shutil.rmtree(OCR.temp_files_directory_path)
-            return (str(e), OCR.ocr_error_status_code)
-
-        # Todo: at this point if OCR executed correctly there will be two output files:
-        #   1. temp_files/ocr_output.txt    -   This will contain the recognized text in plaintext format.
-        #   2. temp_files/ocr_output.tsv    -   This will contain the output in tab-serparated-value format.
-        #                                       See: https://github.com/tesseract-ocr/tesseract/wiki/Command-Line-Usage
-        #                                       I think this contains the data we can utilize to implement horizontal whitespacing.
-
-        # Read output files.
-
+            # return (test, OCR.ocr_error_status_code)
+        except subprocess.CalledProcessError as e:
+            error_text = traceback.format_exc() + '\n\nCommand output:\n' + str(e.output)
+            return (error_text, OCR.ocr_error_status_code)
 
         # Read the tsv file to detect indentations on new lines
         lineNum = 0
@@ -98,13 +98,26 @@ class OCR:
                 text = ''
                 for indent in indents:
                     text += indent + txt_output_file.readline()
-            shutil.rmtree(OCR.temp_files_directory_path)
-        except Exception as e:
-            shutil.rmtree(OCR.temp_files_directory_path)
-            return (str(e), OCR.ocr_error_status_code)
+        except:
+            return (traceback.format_exc(), OCR.ocr_error_status_code)
 
         # Return recognized text.
         return (text, OCR.success_status_code)
+
+
+    # This method is utilized to create a Tesseract binary with executable permission.
+    @staticmethod
+    def give_tesseract_execution_permission():
+        # Copy Tesseract binary directory to tmp directory.
+        # Note: tmp is the only editable directory within Lambda environments.
+        shutil.copytree(OCR.dependency_tesseract_directory_path,
+                        OCR.executable_tesseract_directory_path)
+
+        # Change permissions to executable.
+        for directory_path, _, file_names in os.walk(OCR.executable_tesseract_directory_path):
+            for file_name in file_names:
+                file_path = os.path.join(directory_path, file_name)
+                os.chmod(file_path, 0o755)
 
 
     # This method is utilized to update path and command variables for Windows environment execution.
@@ -112,7 +125,7 @@ class OCR:
     def debug_mode_update_variables():
 
         # Tesseract path
-        OCR.tesseract_executable_path = os.getcwd() + os.path.join(os.path.sep, 'dependencies', 'Tesseract-OCR-Windows', 'tesseract')
+        OCR.tesseract_path = os.getcwd() + os.path.join(os.path.sep, 'dependencies', 'tesseract_ocr_windows', 'tesseract')
 
         # Temporary and output paths
         OCR.temp_files_directory_path = os.getcwd() + os.path.join(os.path.sep, 'temp_files')
