@@ -31,14 +31,15 @@ The function will return a JSON response with the following variables:
 <br>
 
 ### Deployment
-Use a Linux OS for step 1 and step 2 to avoid file permission errors within Lambda environments.
-1. Recursively change project folder contents to permission number 755 (chmod).
-2. Create ZIP file of project folder **contents** (not the project folder itself).
-3. Sign up for an AWS account.
-4. Create S3 bucket.
-5. Upload ZIP file to S3 bucket.
-6. Create Lambda function.
-7. Configure Lambda function with the following settings:
+1. Create a ZIP file of the following files and directories (tested using 7 Zip).
+    - lambda_handler.py
+    - ocr.py
+    - dependencies/tesseract_ocr_linux
+2. Sign up for an AWS account.
+3. Create S3 bucket.
+4. Upload ZIP file to S3 bucket.
+5. Create Lambda function.
+6. Configure Lambda function with the following settings:
    
 | Setting  | Value |
 | ------------- | ------------- |
@@ -46,5 +47,5 @@ Use a Linux OS for step 1 and step 2 to avoid file permission errors within Lamb
 | Handler | lambda_handler.lambda_handler |
 | Timeout | 30+ seconds |
 
-8. Import source code from S3 bucket ZIP file.
-9. Ready to use!
+7. Import source code from S3 bucket ZIP file.
+8. Ready to use!
