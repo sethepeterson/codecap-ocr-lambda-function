@@ -1,5 +1,6 @@
 # tesseract-ocr-lambda-function
-AWS Lambda function that executes Tesseract OCR (*Optimal Character Recognition Engine*) on Base 64 encoded images.
+AWS Lambda function that executes Tesseract OCR (*Optimal Character Recognition Engine*) on Base 64 encoded images.<br>
+The function also implements horizontal whitespace detection through use of Tesseract's TSV output.
 <br><br>
 
 ### Dependencies
