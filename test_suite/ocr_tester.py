@@ -28,12 +28,17 @@ for file_name, expected_text in test_cases:
     with open(file_path, 'rb') as image_file:
         base_64_string = base64.b64encode(image_file.read())
 
-        # Get OCR output.
-        (recognized_text, _) = OCR.parse_image(base_64_string=base_64_string, debug_mode=True)
+        # Create OCR object.
+        ocr = OCR(debug_mode=True)
+
+        # Create temp_files directory.
+        os.makedirs(ocr.temp_files_directory_path, exist_ok=True)
+
+        # Get output.
+        (recognized_text, _) = ocr.parse_image(base_64_string=base_64_string)
 
         # Delete temp_files directory.
-        # Note: When executing in Lambda, this will be done automatically.
-        shutil.rmtree(OCR.temp_files_directory_path)
+        shutil.rmtree(ocr.temp_files_directory_path)
 
         # Case: test passed.
         if recognized_text == expected_text:
