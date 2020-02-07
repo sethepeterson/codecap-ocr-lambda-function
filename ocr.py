@@ -80,30 +80,42 @@ class OCR:
         # Read output files.
 
 
-        # Read the tsv file to detect indentations on new lines
-        lineNum = 0
-        parNum = 0
-        indents = []
-        with open(OCR.tsv_output_file_path) as tsvfile:
-            reader = csv.reader(tsvfile, delimiter='\t')
-            for row in reader:
-                if(row[11].strip() and (row[0] != 'level') and ((int(row[4]) != lineNum) or (int(row[2]) != parNum))):
-                    lineNum = int(row[4])
-                    parNum = int(row[2])
-                    indents.append(' ' * round(int(row[6])/16))
+        # # Read the tsv file to detect indentations on new lines
+        # lineNum = parNum = baseLine = 0
+        # indents = []
+        # with open(OCR.tsv_output_file_path) as tsvfile:
+        #     reader = csv.reader(tsvfile, delimiter='\t')
+        #     for row in reader:
+        #         print(row)
+        #         if (row[11].split()) and (row[0] != 'level') and ((int(row[4]) != lineNum) or (int(row[2]) != parNum)):
+        #             if (baseLine == 0) or (baseLine > int(row[6])):
+        #                 baseLine = int(row[6])
+        #             lineNum = int(row[4])
+        #             parNum = int(row[2])
+        #             indents.append(' ' * round((int(row[6]) - baseLine)/16))
 
-        # Write indentations to the txt output
-        try:
-            with open(OCR.txt_output_file_path, 'r') as txt_output_file:
-                text = ''
-                for indent in indents:
-                    text += indent + txt_output_file.readline()
-            shutil.rmtree(OCR.temp_files_directory_path)
-        except Exception as e:
-            shutil.rmtree(OCR.temp_files_directory_path)
-            return (str(e), OCR.ocr_error_status_code)
+        # # Write indentations to the text output
+        # try:
+        #     with open(OCR.txt_output_file_path, 'r') as txt_output_file:
+        #         text = ''
+        #         count = 0
+        #         line = txt_output_file.readline()
+
+        #         while line:
+        #             if count+1 > len(indents):
+        #                 indents.append('')
+        #             if line != '\n':
+        #                 text += indents[count] + line
+        #                 count += 1
+        #             line = txt_output_file.readline()
+
+        #     shutil.rmtree(OCR.temp_files_directory_path)
+        # except Exception as e:
+        #     shutil.rmtree(OCR.temp_files_directory_path)
+        #     return (str(e), OCR.ocr_error_status_code)
 
         # Return recognized text.
+        text = format_output()
         return (text, OCR.success_status_code)
 
 
@@ -124,3 +136,35 @@ class OCR:
         # Tesseract CLI command
         # Note: Windows environment execution does not require LD_LIBRARY_PATH and TESSDATA_PREFIX specification.
         OCR.tesseract_cli_command = '{} {} {} txt tsv'
+
+
+# Checks the TSV output for formatting errors & fixes them
+# Returns a string containing the formatted output
+def format_output() -> str:
+    # Read the tsv file to detect indentations on new lines
+    lineNum = parNum = baseLine = 0
+    indents = []
+    with open(OCR.tsv_output_file_path) as tsvfile:
+        reader = csv.reader(tsvfile, delimiter='\t')
+        for row in reader:
+            if (row[11].split()) and (row[0] != 'level') and ((int(row[4]) != lineNum) or (int(row[2]) != parNum)):
+                if (baseLine == 0) or (baseLine > int(row[6])):
+                    baseLine = int(row[6])
+                lineNum = int(row[4])
+                parNum = int(row[2])
+                indents.append(' ' * round((int(row[6]) - baseLine)/16))
+
+    # Write indentations to the text output
+    with open(OCR.txt_output_file_path, 'r') as txt_output_file:
+        text = ''
+        count = 0
+        line = txt_output_file.readline()
+
+        while line:
+            if count+1 > len(indents):
+                indents.append('')
+            if line != '\n':
+                text += indents[count] + line
+                count += 1
+            line = txt_output_file.readline()
+    return text.strip()
