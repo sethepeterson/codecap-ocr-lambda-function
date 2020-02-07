@@ -27,17 +27,17 @@ class OCR:
 
             # Output files paths
             # Note: tmp is the only editable directory within Lambda environments.
-            temp_files_directory_path = os.path.join(os.path.sep, 'tmp')
-            self.decoded_image_file_path   = os.path.join(temp_files_directory_path, '{}.png'.format(aws_request_id))
-            self.output_files_prefix  = os.path.join(temp_files_directory_path, aws_request_id)
-            self.txt_output_file_path = self.output_files_prefix + '.txt'
-            self.tsv_output_file_path = self.output_files_prefix + '.tsv'
+            self.temp_files_directory_path = os.path.join(os.path.sep, 'tmp')
+            self.output_files_prefix       = os.path.join(self.temp_files_directory_path, aws_request_id)
+            self.png_output_file_path      = self.output_files_prefix + '.png'
+            self.txt_output_file_path      = self.output_files_prefix + '.txt'
+            self.tsv_output_file_path      = self.output_files_prefix + '.tsv'
 
             # Tesseract paths
             # Note: see OCR.give_tesseract_execution_permission for details.
             self.dependency_tesseract_directory_path  = os.path.join(os.getcwd(), 'dependencies', 'tesseract_ocr_linux')
-            self.executable_tesseract_directory_path  = os.path.join(temp_files_directory_path, 'tesseract_ocr_linux')
-            self.tesseract_data_prefix_directory_path = os.path.join(temp_files_directory_path, 'tesseract_ocr_linux', 'tessdata')
+            self.executable_tesseract_directory_path  = os.path.join(self.temp_files_directory_path, 'tesseract_ocr_linux')
+            self.tesseract_data_prefix_directory_path = os.path.join(self.temp_files_directory_path, 'tesseract_ocr_linux', 'tessdata')
             self.tesseract_lib_directory_path         = os.path.join(self.executable_tesseract_directory_path, 'lib')
             self.tesseract_path                       = os.path.join(self.executable_tesseract_directory_path, 'tesseract')
 
@@ -46,7 +46,7 @@ class OCR:
                 self.tesseract_lib_directory_path,
                 self.tesseract_data_prefix_directory_path,
                 self.tesseract_path,
-                self.decoded_image_file_path,
+                self.png_output_file_path,
                 self.output_files_prefix
             )
 
@@ -55,10 +55,10 @@ class OCR:
 
             # Temporary and output paths
             self.temp_files_directory_path = os.getcwd() + os.path.join(os.path.sep, 'temp_files')
-            self.decoded_image_file_path = os.getcwd() + os.path.join(os.path.sep, 'temp_files', 'decoded_image.png')
-            self.output_files_prefix = os.getcwd() + os.path.join(os.path.sep, 'temp_files', 'temp')
-            self.txt_output_file_path = self.output_files_prefix + '.txt'
-            self.tsv_output_file_path = self.output_files_prefix + '.tsv'
+            self.output_files_prefix       = os.path.join(self.temp_files_directory_path, 'temp')
+            self.png_output_file_path      = self.output_files_prefix + '.png'
+            self.txt_output_file_path      = self.output_files_prefix + '.txt'
+            self.tsv_output_file_path      = self.output_files_prefix + '.tsv'
             
             # Tesseract path
             self.tesseract_path = os.getcwd() + os.path.join(os.path.sep, 'dependencies', 'tesseract_ocr_windows', 'tesseract')
@@ -67,7 +67,7 @@ class OCR:
             # Note: Windows environment execution does not require LD_LIBRARY_PATH and TESSDATA_PREFIX specification.
             self.tesseract_cli_command = '{} {} {} txt tsv'.format(
                 self.tesseract_path,
-                self.decoded_image_file_path,
+                self.png_output_file_path,
                 self.output_files_prefix
             )
 
@@ -84,8 +84,8 @@ class OCR:
     def parse_image(self, base_64_string: str) -> (str, int):
         # Decode Base 64 string to image.
         try:
-            with open(self.decoded_image_file_path, 'wb') as decoded_image_file:
-                decoded_image_file.write(base64.b64decode(base_64_string))
+            with open(self.png_output_file_path, 'wb') as png_output_file:
+                png_output_file.write(base64.b64decode(base_64_string))
         except:
             return (traceback.format_exc(), self.invalid_base_64_string_status_code)
 
@@ -104,7 +104,7 @@ class OCR:
         text = self.format_output()
 
         # Delete temporary files.
-        os.remove(self.decoded_image_file_path)
+        os.remove(self.png_output_file_path)
         os.remove(self.txt_output_file_path)
         os.remove(self.tsv_output_file_path)
 
