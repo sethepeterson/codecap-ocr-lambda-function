@@ -6,7 +6,7 @@ The function also implements horizontal whitespace detection through use of Tess
 ### Dependencies
 * [Windows 10](https://www.microsoft.com/en-us/windows/get-windows-10)
     - Required for local testing.
-* [Python 3.6.8](https://www.python.org/downloads/release/python-368/)
+* [Python 3.7.5](https://www.python.org/downloads/release/python-375/)
     - Required for local testing.
 * [Tesseract-OCR](https://github.com/tesseract-ocr/tesseract)
     - Tesseract pre-compiled binaries for Linux and Windows are [included in this repo](https://github.com/sethepeterson/tesseract-ocr-lambda-function/tree/master/dependencies).
@@ -44,7 +44,7 @@ The function will return a JSON response with the following variables:
    
 | Setting  | Value |
 | ------------- | ------------- |
-| Runtime  | Python 3.6  |
+| Runtime  | Python 3.7  |
 | Handler | lambda_handler.lambda_handler |
 | Timeout | 30+ seconds |
 
