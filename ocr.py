@@ -36,16 +36,17 @@ class OCR:
             # Tesseract paths
             # Note: see OCR.give_tesseract_execution_permission for details.
             self.dependency_tesseract_directory_path  = os.path.join(os.getcwd(), 'dependencies', 'tesseract_ocr_linux')
-            self.executable_tesseract_directory_path  = os.path.join(self.temp_files_directory_path, 'tesseract_ocr_linux')
-            self.tesseract_data_prefix_directory_path = os.path.join(self.temp_files_directory_path, 'tesseract_ocr_linux', 'tessdata')
-            self.tesseract_lib_directory_path         = os.path.join(self.executable_tesseract_directory_path, 'lib')
-            self.tesseract_path                       = os.path.join(self.executable_tesseract_directory_path, 'tesseract')
+            self.dependency_tesseract_path            = os.path.join(self.dependency_tesseract_directory_path, 'tesseract')
+            self.executable_tesseract_path            = os.path.join(self.temp_files_directory_path, 'tesseract')
+            self.tesseract_data_prefix_directory_path = os.path.join(self.dependency_tesseract_directory_path, 'tessdata')
+            self.tesseract_lib_directory_path         = os.path.join(self.dependency_tesseract_directory_path, 'lib')
+            
 
             # Tesseract CLI command
             self.tesseract_cli_command = 'LD_LIBRARY_PATH={} TESSDATA_PREFIX={} {} {} {} txt tsv'.format(
                 self.tesseract_lib_directory_path,
                 self.tesseract_data_prefix_directory_path,
-                self.tesseract_path,
+                self.executable_tesseract_path,
                 self.png_output_file_path,
                 self.output_files_prefix
             )
@@ -72,7 +73,6 @@ class OCR:
             )
 
 
-
     ##############################################################################################################
     ##                                               Functions                                                  ##
     ##############################################################################################################
@@ -90,7 +90,7 @@ class OCR:
             return (traceback.format_exc(), self.invalid_base_64_string_status_code)
 
         # Give Tesseract execution permission if in a production environment and it has not been done.
-        if not self.debug_mode and not os.path.isdir(self.executable_tesseract_directory_path):
+        if not self.debug_mode and not os.path.isfile(self.executable_tesseract_path):
             self.give_tesseract_execution_permission()
 
         # Execute OCR on decoded image.
@@ -148,17 +148,10 @@ class OCR:
     # This method is utilized to create a Tesseract binary with executable permission.
     def give_tesseract_execution_permission(self):
 
-        # Check if Tesseract is already executable in the current envrionment.
-        if os.path.isdir(self.executable_tesseract_directory_path):
-            return
-
-        # Copy Tesseract binary directory to tmp directory.
+        # Copy Tesseract binary to tmp directory.
         # Note: tmp is the only editable directory within Lambda environments.
-        shutil.copytree(self.dependency_tesseract_directory_path,
-                        self.executable_tesseract_directory_path)
+        shutil.copyfile(self.dependency_tesseract_path,
+                        self.executable_tesseract_path)
 
         # Change permissions to executable.
-        for directory_path, _, file_names in os.walk(self.executable_tesseract_directory_path):
-            for file_name in file_names:
-                file_path = os.path.join(directory_path, file_name)
-                os.chmod(file_path, 0o755)
+        os.chmod(self.executable_tesseract_path, 0o755)
