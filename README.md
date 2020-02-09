@@ -32,10 +32,15 @@ The function will return a JSON response with the following variables:
 <br>
 
 ### Deployment
-1. Create a ZIP file of the following files and directories (tested using 7 Zip).
-    - lambda_handler.py
-    - ocr.py
-    - dependencies/tesseract_ocr_linux
+1. Create a ZIP file with the following structure (tested using 7 Zip):
+```bash
+    .
+    ├── lambda_handler.py
+    ├── ocr.py
+    └── dependencies
+        └── tesseract_ocr_linux
+```
+
 2. Sign up for an AWS account.
 3. Create S3 bucket.
 4. Upload ZIP file to S3 bucket.
