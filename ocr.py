@@ -1,8 +1,8 @@
 import base64
+import binascii
 import csv
 import os
 import shutil
-import stat
 import subprocess
 import traceback
 
@@ -85,8 +85,8 @@ class OCR:
         # Decode Base 64 string to image.
         try:
             with open(self.png_output_file_path, 'wb') as png_output_file:
-                png_output_file.write(base64.b64decode(base_64_string))
-        except:
+                png_output_file.write(base64.b64decode(base_64_string, validate=True))
+        except (OSError, binascii.Error):
             return (traceback.format_exc(), self.invalid_base_64_string_status_code)
 
         # Give Tesseract execution permission if in a production environment and it has not been done.
@@ -96,8 +96,8 @@ class OCR:
         # Execute OCR on decoded image.
         try:
             subprocess.check_output(self.tesseract_cli_command, shell=True, stderr=subprocess.STDOUT)
-        except subprocess.CalledProcessError as e:
-            error_text = traceback.format_exc() + '\n\nCommand output:\n' + str(e.output)
+        except subprocess.CalledProcessError as exception:
+            error_text = traceback.format_exc() + '\n\nCommand output:\n' + str(exception.output)
             return (error_text, self.ocr_error_status_code)
 
         # Format recognized text.
