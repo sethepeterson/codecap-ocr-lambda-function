@@ -1,6 +1,7 @@
 # tesseract-ocr-lambda-function
 [![Python 3.7](https://img.shields.io/badge/python-3.7-green.svg)](https://www.python.org/downloads/release/python-375/)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/sethepeterson/tesseract-ocr-lambda-function.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/sethepeterson/tesseract-ocr-lambda-function/context:python)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/sethepeterson/tesseract-ocr-lambda-function.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/sethepeterson/tesseract-ocr-lambda-function/alerts/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 <br>
 AWS Lambda function that executes Tesseract (*Optimal Character Recognition Engine*) on Base 64 encoded images.<br>
