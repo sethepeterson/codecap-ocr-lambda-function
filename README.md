@@ -3,18 +3,18 @@
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/sethepeterson/tesseract-ocr-lambda-function.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/sethepeterson/tesseract-ocr-lambda-function/context:python)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 <br>
-AWS Lambda function that executes Tesseract OCR (*Optimal Character Recognition Engine*) on Base 64 encoded images.<br>
+AWS Lambda function that executes Tesseract (*Optimal Character Recognition Engine*) on Base 64 encoded images.<br>
 The function also implements horizontal whitespace detection through use of Tesseract's TSV output.
 <br><br>
 
 ### Dependencies
 * [Tesseract-OCR](https://github.com/tesseract-ocr/tesseract)
-    - Tesseract-OCR pre-compiled binaries for Amazon Linux 1 and Windows are [included in this repo](https://github.com/sethepeterson/tesseract-ocr-lambda-function/tree/master/dependencies).
+    - Tesseract pre-compiled binaries for Amazon Linux 1 and Windows are [included in this repo](https://github.com/sethepeterson/tesseract-ocr-lambda-function/tree/master/dependencies).
 * [Windows](https://www.microsoft.com/en-us/windows/get-windows-10)
     - Required for local testing.
 * [Python 3.7.5](https://www.python.org/downloads/release/python-375/)
     - Required for local testing.
-    - The Tesseract-OCR Linux binary in this repo is only compatible with Amazon Linux 1, which corresponds to Lambda Python runtimes ≤ Version 3.7.5. 
+    - The Tesseract Linux binary in this repo is only compatible with Amazon Linux 1, which corresponds to Lambda Python runtimes ≤ Version 3.7.5. 
 <br>
 
 ### Testing
