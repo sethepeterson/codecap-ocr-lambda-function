@@ -9,7 +9,7 @@ The function also implements horizontal whitespace detection through use of Tess
 
 ### Dependencies
 * [Tesseract-OCR](https://github.com/tesseract-ocr/tesseract)
-    - Tesseract pre-compiled binaries for Amazon Linux 1 and Windows are [included in this repo](https://github.com/sethepeterson/tesseract-ocr-lambda-function/tree/master/dependencies).
+    - Tesseract-OCR pre-compiled binaries for Amazon Linux 1 and Windows are [included in this repo](https://github.com/sethepeterson/tesseract-ocr-lambda-function/tree/master/dependencies).
 * [Windows](https://www.microsoft.com/en-us/windows/get-windows-10)
     - Required for local testing.
 * [Python 3.7.5](https://www.python.org/downloads/release/python-375/)
@@ -18,7 +18,7 @@ The function also implements horizontal whitespace detection through use of Tess
 <br>
 
 ### Testing
-Local testing is supported only for Windows 10 systems. <br>
+Local testing is supported only for Windows. <br>
 Modify [/test_suite](https://github.com/sethepeterson/tesseract-ocr-lambda-function/tree/master/test_suite) to add test cases. <br>
 Execute [ocr_tester.py](https://github.com/sethepeterson/tesseract-ocr-lambda-function/tree/master/test_suite/ocr_tester.py) to run tests.
 <br><br>
