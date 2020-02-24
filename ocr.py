@@ -5,7 +5,7 @@ import os
 import shutil
 import subprocess
 import traceback
-
+import ctypes
 
 class OCR:
 
@@ -81,7 +81,7 @@ class OCR:
     # Returns a tuple:
     #   1. OCR result
     #   2. Status code
-    def parse_image(self, base_64_string: str) -> (str, int):
+    def parse_image(self, base_64_string: str) -> (str, int, [(str, int)]):
         # Decode Base 64 string to image.
         try:
             with open(self.png_output_file_path, 'wb') as png_output_file:
@@ -102,6 +102,7 @@ class OCR:
 
         # Format recognized text.
         text = self.format_output()
+        conf = self.get_confidence()
 
         # Delete temporary files.
         os.remove(self.png_output_file_path)
@@ -109,7 +110,7 @@ class OCR:
         os.remove(self.tsv_output_file_path)
 
         # Return recognized text.
-        return (text, self.success_status_code)
+        return (text, self.success_status_code, conf)
 
 
     # Checks the TSV output for formatting errors & fixes them
@@ -144,7 +145,17 @@ class OCR:
                 line = txt_output_file.readline()
         return text.strip()
 
+    def get_confidence(self) -> ctypes.Array:
+         conf = []
+         with open(self.tsv_output_file_path) as tsvfile:
+            reader = csv.reader(tsvfile, delimiter='\t')
+            list_iterator = iter(reader)
+            next(list_iterator)
+            for row in list_iterator:
+                if row[11].split():
+                    conf.append((row[11], row[10]))
 
+            print(conf)
     # This method is utilized to create a Tesseract binary with executable permission.
     def give_tesseract_execution_permission(self):
 
