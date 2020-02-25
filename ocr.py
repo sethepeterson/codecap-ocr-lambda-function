@@ -150,14 +150,14 @@ class OCR:
 
     # Reads the TSV output file and constructs a list of recognized strings and their associated confidence value.
     def get_confidence(self) -> ctypes.Array:
-         conf = []
-         with open(self.tsv_output_file_path) as tsvfile:
-            reader = csv.reader(tsvfile, delimiter='\t')
-            list_iterator = iter(reader)
-            next(list_iterator)
-            for row in list_iterator:
-                if row[11].split():
-                    conf.append((row[11], row[10]))
+        conf = []
+        with open(self.tsv_output_file_path) as tsvfile:
+           reader = csv.reader(tsvfile, delimiter='\t')
+           list_iterator = iter(reader)
+           next(list_iterator)
+           for row in list_iterator:
+               if row[11].split():
+                   conf.append((row[11], row[10]))
         return conf
 
 
