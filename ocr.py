@@ -81,6 +81,7 @@ class OCR:
     # Returns a tuple:
     #   1. OCR result
     #   2. Status code
+    #   2. List< Tuple<recognized characters, confidence> >
     def parse_image(self, base_64_string: str) -> (str, int, [(str, int)]):
         # Decode Base 64 string to image.
         try:
@@ -143,8 +144,11 @@ class OCR:
                     text += indents[count] + line
                     count += 1
                 line = txt_output_file.readline()
+
         return text.strip()
 
+
+    # Reads the TSV output file and constructs a list of recognized strings and their associated confidence value.
     def get_confidence(self) -> ctypes.Array:
          conf = []
          with open(self.tsv_output_file_path) as tsvfile:
@@ -154,8 +158,9 @@ class OCR:
             for row in list_iterator:
                 if row[11].split():
                     conf.append((row[11], row[10]))
+        return conf
 
-            print(conf)
+
     # This method is utilized to create a Tesseract binary with executable permission.
     def give_tesseract_execution_permission(self):
 
