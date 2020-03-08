@@ -1,0 +1,12 @@
+# Define constants.
+test_files_path = os.getcwd() + os.path.join(os.path.sep, 'test_suite', 'test_files', 'inputs', '{}')
+test_passed = '{} -> PASSED'
+test_failed = '{} -> FAILED\n\nExpected:\n{}\n\nActual:\n{}'
+
+# Initialize test cases.
+# Test cases should be modeled as a tuple: (<file name>, <expected output text>)
+test_cases = []
+test_case_names = [file.split('.')[0] for file in os.listdir('./test_suite/test_files/inputs')]
+for case in test_case_names:
+    with open('./test_suite/test_files/expected/' + case + '.txt') as expected_file:
+        test_cases.append((case + '.PNG', expected_file.read()))

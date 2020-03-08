@@ -123,11 +123,12 @@ class OCR:
         with open(self.tsv_output_file_path) as tsvfile:
             reader = csv.reader(tsvfile, delimiter='\t')
             for row in reader:
-                if (row[11].split()) and (row[0] != 'level') and ((int(row[4]) != lineNum) or (int(row[2]) != parNum)):
+                print(row)
+                if (row[11].split()) and (row[0] != 'level') and ((int(row[4]) != lineNum) or (int(row[3]) != parNum)):
                     if (baseLine == 0) or (baseLine > int(row[6])):
                         baseLine = int(row[6])
                     lineNum = int(row[4])
-                    parNum = int(row[2])
+                    parNum = int(row[3])
                     indents.append(' ' * round((int(row[6]) - baseLine)/16))
 
         # Write indentations to the text output
@@ -155,7 +156,6 @@ class OCR:
                 if row[11].split():
                     conf.append((row[11], row[10]))
 
-            print(conf)
     # This method is utilized to create a Tesseract binary with executable permission.
     def give_tesseract_execution_permission(self):
 

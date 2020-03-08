@@ -5,23 +5,24 @@ from ocr import OCR
 import base64
 import os
 import shutil
-
+from os import listdir
 
 # Define constants.
-test_files_path = os.getcwd() + os.path.join(os.path.sep, 'test_suite', 'test_files', '{}')
-test_passed = '\n{} -> PASSED'
-test_failed = '\n{} -> FAILED\nExpected:\n{}\nActual:\n{}'
+test_files_path = os.getcwd() + os.path.join(os.path.sep, 'test_suite', 'test_files', 'inputs', '{}')
+test_passed = '{} -> PASSED'
+test_failed = '{} -> FAILED\n\nExpected:\n{}\n\nActual:\n{}'
 
 # Initialize test cases.
 # Test cases should be modeled as a tuple: (<file name>, <expected output text>)
 test_cases = []
-test_cases.append(('google.PNG', 'Google\n\n'))
-test_cases.append(('python1.PNG', ''))
-
+test_case_names = [file.split('.')[0] for file in os.listdir('./test_suite/test_files/inputs')]
+for case in test_case_names:
+    with open('./test_suite/test_files/expected/' + case + '.txt') as expected_file:
+        test_cases.append((case + '.PNG', expected_file.read()))
 
 # Execute test cases.
-print('\n')
 for file_name, expected_text in test_cases:
+    print('=====================================')
 
     # Convert file to encoded Base64 string.
     file_path = test_files_path.format(file_name)
