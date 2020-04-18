@@ -20,6 +20,8 @@ for case in test_case_names:
     with open('./test_suite/test_files/expected/' + case + '.txt') as expected_file:
         test_cases.append((case + '.PNG', expected_file.read()))
 
+
+
 # Execute test cases.
 for file_name, expected_text in test_cases:
     print('=====================================')
@@ -36,7 +38,7 @@ for file_name, expected_text in test_cases:
         os.makedirs(ocr.temp_files_directory_path, exist_ok=True)
 
         # Get output.
-        (recognized_text, _, _) = ocr.parse_image(base_64_string=base_64_string)
+        (_, recognized_text, _) = ocr.parse_image(base_64_string=base_64_string)
 
         # Delete temp_files directory.
         shutil.rmtree(ocr.temp_files_directory_path)

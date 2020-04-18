@@ -8,10 +8,10 @@ from ocr import OCR
 #   context        - contains AWS info.
 def lambda_handler(base_64_string: str, context):
     ocr = OCR(debug_mode=False, aws_request_id=context.aws_request_id)
-    (recognized_text, status_code, conf) = ocr.parse_image(base_64_string=base_64_string)
+    (status_code, recognized_text, confidence_values) = ocr.parse_image(base_64_string=base_64_string)
 
     return {
-        'conf': json.dumps(conf),
-        'text': json.dumps(recognized_text),
-        'statusCode': json.dumps(status_code)
+        'statusCode': json.dumps(status_code),
+        'recognizedText': json.dumps(recognized_text),
+        'confidenceValues': json.dumps(confidence_values)
     }

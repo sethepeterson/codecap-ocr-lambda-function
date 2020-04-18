@@ -79,10 +79,10 @@ class OCR:
 
     # Decodes the Base 64 encoded image and executes Tesseract OCR.
     # Returns a tuple:
-    #   1. OCR result
-    #   2. Status code
+    #   1. Status code
+    #   2. Recognized text
     #   2. List< Tuple<recognized characters, confidence> >
-    def parse_image(self, base_64_string: str) -> (str, int, [(str, int)]):
+    def parse_image(self, base_64_string: str) -> (int, str, [(str, int)]):
         # Decode Base 64 string to image.
         try:
             with open(self.png_output_file_path, 'wb') as png_output_file:
@@ -103,7 +103,7 @@ class OCR:
 
         # Format recognized text.
         text = self.format_output()
-        conf = self.get_confidence()
+        confidence_values = self.get_confidence_values()
 
         # Delete temporary files.
         os.remove(self.png_output_file_path)
@@ -111,46 +111,105 @@ class OCR:
         os.remove(self.tsv_output_file_path)
 
         # Return recognized text.
-        return (text, self.success_status_code, conf)
+        return (self.success_status_code, text, confidence_values)
 
 
     # Checks the TSV output for formatting errors & fixes them
     # Returns a string containing the formatted output
     def format_output(self) -> str:
 
-        # Read the tsv file to detect indentations on new lines
-        lineNum = parNum = baseLine = 0
-        indents = []
-        with open(self.tsv_output_file_path) as tsvfile:
-            reader = csv.reader(tsvfile, delimiter='\t')
-            for row in reader:
-                print(row)
-                if (row[11].split()) and (row[0] != 'level') and ((int(row[4]) != lineNum) or (int(row[3]) != parNum)):
-                    if (baseLine == 0) or (baseLine > int(row[6])):
-                        baseLine = int(row[6])
-                    lineNum = int(row[4])
-                    parNum = int(row[3])
-                    indents.append(' ' * round((int(row[6]) - baseLine)/16))
+        # Split lines into list and remove trailing \n lines.
+        lines = []
+        with open(self.txt_output_file_path) as txt_output_file:
+            lines = txt_output_file.readlines()
+            while lines[-1] == '\n':
+                lines.pop()
 
-        # Write indentations to the text output
-        with open(self.txt_output_file_path, 'r') as txt_output_file:
-            text = ''
-            count = 0
-            line = txt_output_file.readline()
+        # Determine indent for each line.
+        tab_value = 90
+        baseline_left = 0
+        with open(self.tsv_output_file_path) as tsv_output_file:
+            tsv_data = list(csv.DictReader(tsv_output_file, delimiter='\t'))
 
-            while line:
-                if count+1 > len(indents):
-                    indents.append('')
-                if line != '\n':
-                    text += indents[count] + line
-                    count += 1
-                line = txt_output_file.readline()
+            # Determine baseline left value and remove leading -1 confidence rows except for 1.
+            for index, row in enumerate(tsv_data):
 
-        return text.strip()
+                # Check if row has a confidence value that is not -1.
+                # This will determine the row with the first usable text.
+                if row['conf'] != '-1':
+                    baseline_left = int(row['left'])
+                    tsv_data = tsv_data[index - 1:]     # Leave the -1 confidence row for the first section.
+                    break
+
+            # Determine indents.
+            current_line_value = 0      # Note: line values in the TSV are always order sequentially, but the ordering sometimes restarts back to zero.
+            lines_index = -1            # Note: index used to access the local lines list.
+            determined_indent = False   # Note: state used to track if the current line's indent has been determined.
+            for row in tsv_data:
+
+                # Case: the current row represents has a new line value and the text is non-empty.
+                # -> Update current line value and increment lines list index.
+                # Notes: this case should be hit by the -1 confidence row preceeding each section of rows that are grouped by the same line value.
+                line_value = int(row['line_num'])
+                if line_value != current_line_value:
+                    current_line_value = line_value
+                    determined_indent = False
+                    lines_index += 1
+
+                # Case: the line's indent has not been determined and the text is non-empty.
+                # -> Calculate indent and append it to the corresponding line.
+                elif not determined_indent and row['text'] != '' and not row['text'].isspace():
+                    determined_indent = True
+                    tab_count = round((int(row['left']) - baseline_left) / tab_value)
+                    indent = '\t' * tab_count
+                    lines[lines_index] = indent + lines[lines_index]
+            
+        # Build and return output.
+        return ''.join(lines)
+
+                    
+
+                # # Check if text value is nonempty.
+                # if row['text'] != '':
+
+                #     # Check if the line number or paragraph number has changed.
+                #     if row['line_num'] != line:
+                #         current_left_margin = int(row['left'])
+
+                #         # If current left margin is less than the current base left margin or
+                #         # if the current base left margin has not been set.
+                #         # -> Reset base left margin to current left margin.
+                #         if current_left_margin < baseline_left or baseline_left == 0:
+                #             baseline_left = current_left_margin
+
+                #         # Append indent for current line.
+                #         space_count = round((current_left_margin - baseline_left) / 16)
+                #         indent = '\t' * round(space_count / 12)
+                #         indents.append(indent)
+
+                #         # Update the current line and current paragraph.
+                #         line = row['line_num']
+                #         paragraph = row['par_num']
+
+        # # Write indentations to the text output
+        # with open(self.txt_output_file_path, 'r') as txt_output_file:
+        #     text = ''
+        #     count = 0
+        #     line = txt_output_file.readline()
+
+        #     while line:
+        #         if count+1 > len(indents):
+        #             indents.append('')
+        #         if line != '\n':
+        #             text += indents[count] + line
+        #             count += 1
+        #         line = txt_output_file.readline()
+
+        # return text.strip()
 
 
     # Reads the TSV output file and constructs a list of recognized strings and their associated confidence value.
-    def get_confidence(self) -> ctypes.Array:
+    def get_confidence_values(self) -> ctypes.Array:
         conf = []
         with open(self.tsv_output_file_path) as tsvfile:
            reader = csv.reader(tsvfile, delimiter='\t')
