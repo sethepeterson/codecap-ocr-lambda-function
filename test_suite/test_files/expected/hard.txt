@@ -1,0 +1,19 @@
+export class AddNote extends Component {
+    state = {
+        id: '',
+        name: '',
+        modified: '',
+        folderId: '',
+        content: ''
+    }
+
+    static contextType = Context;
+
+    handleChange = (e) => {
+        this.setState({
+            id: e.target.id,
+            name: e.target.value,
+            modified: e.target.value,
+            folderId: e.target.value
+        })
+    }

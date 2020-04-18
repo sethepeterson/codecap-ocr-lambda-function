@@ -1,11 +1,12 @@
 import base64
 import binascii
 import csv
+import ctypes
 import os
 import shutil
 import subprocess
+import sys
 import traceback
-import ctypes
 
 class OCR:
 
@@ -126,22 +127,27 @@ class OCR:
                 lines.pop()
 
         # Determine indent for each line.
-        tab_value = 90
-        baseline_left = 0
         with open(self.tsv_output_file_path) as tsv_output_file:
             tsv_data = list(csv.DictReader(tsv_output_file, delimiter='\t'))
 
-            # Determine baseline left value and remove leading -1 confidence rows except for 1.
+            # Remove leading -1 confidence rows except for 1 before the first section.
             for index, row in enumerate(tsv_data):
 
                 # Check if row has a confidence value that is not -1.
                 # This will determine the row with the first usable text.
                 if row['conf'] != '-1':
-                    baseline_left = int(row['left'])
                     tsv_data = tsv_data[index - 1:]     # Leave the -1 confidence row for the first section.
                     break
 
+            # Determine baseline left
+            baseline_left = sys.maxsize
+            for row in tsv_data:
+                left_value = int(row['left'])
+                if left_value != 0:
+                    baseline_left = min(baseline_left, left_value)
+
             # Determine indents.
+            tab_value = 90              # Note: Each \t equates to roughly 90 in a left value.
             current_line_value = 0      # Note: line values in the TSV are always order sequentially, but the ordering sometimes restarts back to zero.
             lines_index = -1            # Note: index used to access the local lines list.
             determined_indent = False   # Note: state used to track if the current line's indent has been determined.

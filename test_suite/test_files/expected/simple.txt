@@ -1,0 +1,4 @@
+public BasicPlayer()
+{
+    myHand = new Card[5];
+}
