@@ -167,46 +167,6 @@ class OCR:
         # Build and return output.
         return ''.join(lines)
 
-                    
-
-                # # Check if text value is nonempty.
-                # if row['text'] != '':
-
-                #     # Check if the line number or paragraph number has changed.
-                #     if row['line_num'] != line:
-                #         current_left_margin = int(row['left'])
-
-                #         # If current left margin is less than the current base left margin or
-                #         # if the current base left margin has not been set.
-                #         # -> Reset base left margin to current left margin.
-                #         if current_left_margin < baseline_left or baseline_left == 0:
-                #             baseline_left = current_left_margin
-
-                #         # Append indent for current line.
-                #         space_count = round((current_left_margin - baseline_left) / 16)
-                #         indent = '\t' * round(space_count / 12)
-                #         indents.append(indent)
-
-                #         # Update the current line and current paragraph.
-                #         line = row['line_num']
-                #         paragraph = row['par_num']
-
-        # # Write indentations to the text output
-        # with open(self.txt_output_file_path, 'r') as txt_output_file:
-        #     text = ''
-        #     count = 0
-        #     line = txt_output_file.readline()
-
-        #     while line:
-        #         if count+1 > len(indents):
-        #             indents.append('')
-        #         if line != '\n':
-        #             text += indents[count] + line
-        #             count += 1
-        #         line = txt_output_file.readline()
-
-        # return text.strip()
-
 
     # Reads the TSV output file and constructs a list of recognized strings and their associated confidence value.
     def get_confidence_values(self) -> ctypes.Array:
