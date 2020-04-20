@@ -6,6 +6,7 @@ import os
 import shutil
 import subprocess
 import sys
+import re
 import traceback
 
 class OCR:
@@ -188,7 +189,9 @@ class OCR:
                     lines[lines_index] = indent + lines[lines_index]
             
         # Build and return output.
-        return ''.join(lines)
+        output = ''.join(lines).strip()                     # Remove leading and trailing whitespace.
+        output = re.sub(r'(\s*\n){3,}', '\n\n', output)     # Replace three or more newlines with two.
+        return output
 
 
     # Reads the TSV output file and constructs a list of recognized strings and their associated confidence value.
